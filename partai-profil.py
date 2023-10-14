@@ -3,6 +3,8 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+import platform
 import time
 import pandas
 from bs4 import BeautifulSoup
@@ -19,9 +21,15 @@ def scroll_to_end(driver):
 
 chrome_options = Options()
 chrome_options.add_argument("--headless")
-chrome_options.binary_location = '/usr/local/bin/chromedriver'
 
-driver = webdriver.Chrome(options=chrome_options)
+if platform.system() == "Darwin":  # macOS
+    chrome_options.binary_location = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+elif platform.system() == "Linux":  # Ubuntu
+    chrome_options.binary_location = '/usr/bin/google-chrome'
+
+service = Service(executable_path='/usr/local/bin/chromedriver')
+
+driver = webdriver.Chrome(service=service, options=chrome_options)
 
 csv_path = 'raw_data/partai_list.csv'
 df = pd.read_csv(csv_path)
